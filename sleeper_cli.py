@@ -1,5 +1,6 @@
 import httputil
 import json
+import discord_client
 from team import Team
 from matchup import Matchup 
 from power_rankings import PowerRankings
@@ -100,8 +101,24 @@ def get_trophies(matchups, roster_ids_to_team_name):
 
     return (low_team_name, low_score, high_team_name, high_score, close_winner, close_loser, closest_score, blown_out_team_name, ownerer_team_name, biggest_blowout) 
 
+def print_choices():
+    print()
+    print('what would you like to do next?')
+    print('1 to post standings')
+    print('2 to post power rankings')
+    print('3 to post weekly matchups')
+    print('4 to post weekly trophies')
+    print('5 to send a custom message')
+
 if __name__ == '__main__':
-    league_id = input('enter league id:\n')
+    league_id = 0
+    discord_token = ''
+    channel_id = ''
+    with open('tokens.json') as f:
+        tokens = json.load(f)
+        discord_token = tokens['discordToken']
+        channel_id = tokens['channelId']
+        league_id = tokens['sleeperLeagueId']
     number_of_weeks_played = int(input('enter number of weeks played:\n'))
     print('gathering data for {} weeks of play\n'.format(str(number_of_weeks_played)))
     teams = get_teams(league_id)
@@ -119,3 +136,29 @@ if __name__ == '__main__':
     print(get_power_rankings_text(scoreboard, teams, roster_ids_to_team_name))
     print()
     print(get_standings_text(teams))
+    discordClient = discord_client.DiscordClient(discord_token, channel_id)
+    print_choices()
+    choice = input('any other key to exit\n')
+    while choice == '1' or choice == '2' or choice == '3' or choice == '4' or choice == '5':
+        message = ''
+        if choice == '1':
+            message = get_standings_text(teams)
+        elif choice == '2':
+            message = get_power_rankings_text(scoreboard, teams, roster_ids_to_team_name)
+        elif choice == '3':
+            week = int(input('enter week\n'))
+            message = get_matchups_text(weekly_matchups, roster_ids_to_team_name, week)
+        elif choice == '4':
+            week = int(input('enter week\n'))
+            message = get_trophies_text(get_trophies(weekly_matchups, roster_ids_to_team_name))
+        elif choice == '5':
+            message = input('enter your message\n')
+        print()
+        print('the message to be sent is: \n')
+        print(message)
+        print('ok to send?')
+        final_say = input('y for yes or any other key for no\n')
+        if final_say == 'y' or final_say == 'Y':
+            discordClient.send_message(message)
+        print_choices()
+        choice = input('any other key to exit\n')

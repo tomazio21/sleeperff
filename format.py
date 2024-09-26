@@ -2,7 +2,7 @@ def get_standings_text(teams):
     standings_text = []
     sorted_teams = sorted(teams, key=lambda x: (x.wins, x.pf), reverse=True)
     for team in sorted_teams:
-        standings_text.append(team.display_name + ' ' + str(team.roster_id) + ' ' + str(team.wins) + '-' + str(team.losses) + '-' + str(team.ties) + ' ' + str(team.pf) + ' ' + str(team.pa))
+        standings_text.append(team.display_name + '    ' + str(team.wins) + '-' + str(team.losses) + '-' + str(team.ties) + '    ' + str(team.pf) + ' PF    ' + str(team.pa) + ' PA')
     text = ['Standings'] + standings_text 
     return '\n'.join(text)
 

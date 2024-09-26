@@ -1,5 +1,6 @@
 import urllib.request
 import urllib.parse
+import json
 
 def get(url, params=None, headers=None): 
     if params != None:
@@ -12,14 +13,12 @@ def get(url, params=None, headers=None):
     response = urllib.request.urlopen(req)
     return response
 
-def post(url, params, headers=None, json=False):
-    req = urllib.request.Request(url)
-    data = ''
-    if json == False:
-        params = urllib.parse.urlencode(params)
+def post(url, data, headers=None):
+    req = urllib.request.Request(url, method="POST")
     if headers != None:
         for name, value in headers.items():
             req.add_header(name, value)
-    data = params.encode('utf-8')
-    response = urllib.request.urlopen(req, data)
+    data = json.dumps(data)
+    data = data.encode()
+    response = urllib.request.urlopen(req, data=data)
     return response
