@@ -44,6 +44,6 @@ def get_trophies_text(data):
     blowout_str = ['%s blown out by %s by a margin of %.2f' %
                    (blown_out_team_name, ownerer_team_name, biggest_blowout)]
 
-    text = ['Trophies of the week:'] + low_score_str + \
-        high_score_str + close_score_str + blowout_str
+    text = ['Trophies of the week:'] + (low_score_str +
+        high_score_str + close_score_str + blowout_str)
     return '\n'.join(text)
