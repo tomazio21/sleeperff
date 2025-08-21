@@ -2,7 +2,6 @@ import urllib.request
 import urllib.parse
 import json
 
-
 def get(url, params=None, headers=None):
     if params is not None:
         urlEncodedParams = urllib.parse.urlencode(params)
