@@ -150,6 +150,7 @@ if __name__ == '__main__':
     teams = get_teams_with_roster_data(teams, rosters_keyed_by_owner_id)
     roster_ids_to_team_name = get_roster_ids_to_team_name(teams)
     matchups = get_matchups(league_id, week_number)
+    weekly_matchups = get_matchups_by_week(matchups, week_number)
     power_rankings = PowerRankings(matchups, len(teams))
     scoreboard = power_rankings.get_scoreboard(0.5)
 
@@ -163,11 +164,9 @@ if __name__ == '__main__':
             message = get_power_rankings_text(
                 scoreboard, teams, roster_ids_to_team_name)
         elif choice == '3':
-            week = int(input('enter week\n'))
             message = get_matchups_text(
-                weekly_matchups, roster_ids_to_team_name, week)
+                weekly_matchups, roster_ids_to_team_name, week_number)
         elif choice == '4':
-            week = int(input('enter week\n'))
             message = get_trophies_text(get_trophies(
                 weekly_matchups, roster_ids_to_team_name))
         elif choice == '5':
