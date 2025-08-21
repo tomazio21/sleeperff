@@ -7,11 +7,19 @@ from power_rankings import PowerRankings
 from format import (get_standings_text, get_matchups_text,
                     get_power_rankings_text, get_trophies_text)
 
+
 urls = {
     "get_users": "https://api.sleeper.app/v1/league/{}/users",
     "get_roster": "https://api.sleeper.app/v1/league/{}/rosters",
-    "get_matchups": "https://api.sleeper.app/v1/league/{}/matchups/{}"
+    "get_matchups": "https://api.sleeper.app/v1/league/{}/matchups/{}",
+    "get_nfl_state": "https://api.sleeper.app/v1/state/nfl"
 }
+
+
+def get_nfl_week():
+    response = httputil.get(urls['get_nfl_state'])
+    parsed = json.loads(response.read().decode('utf-8'))
+    return parsed['week']
 
 
 def get_teams(league_id):
@@ -126,33 +134,25 @@ def print_choices():
 
 if __name__ == '__main__':
     league_id = 0
-    discord_token = ''
-    channel_id = ''
+    discordClient = None
     with open('tokens.json') as f:
         tokens = json.load(f)
+        league_id = tokens['sleeperLeagueId']
         discord_token = tokens['discordToken']
         channel_id = tokens['channelId']
-        league_id = tokens['sleeperLeagueId']
-    number_of_weeks_played = int(input('enter number of weeks played:\n'))
-    print('gathering data for {} weeks of play\n'.format(
-        str(number_of_weeks_played)))
+        discordClient = discord_client.DiscordClient(discord_token, channel_id)
+
+    week_number = get_nfl_week()
+    print('gathering data for week {}'.format(str(week_number)))
+
     teams = get_teams(league_id)
     rosters_keyed_by_owner_id = get_rosters_keyed_by_owner_id(league_id)
     teams = get_teams_with_roster_data(teams, rosters_keyed_by_owner_id)
     roster_ids_to_team_name = get_roster_ids_to_team_name(teams)
-    matchups = get_matchups(league_id, number_of_weeks_played)
-    for week in range(1, number_of_weeks_played + 1):
-        weekly_matchups = get_matchups_by_week(matchups, week)
-        print(get_matchups_text(weekly_matchups, roster_ids_to_team_name, week))
-        print(get_trophies_text(get_trophies(
-            weekly_matchups, roster_ids_to_team_name)))
-        print()
+    matchups = get_matchups(league_id, week_number)
     power_rankings = PowerRankings(matchups, len(teams))
     scoreboard = power_rankings.get_scoreboard(0.5)
-    print(get_power_rankings_text(scoreboard, teams, roster_ids_to_team_name))
-    print()
-    print(get_standings_text(teams))
-    discordClient = discord_client.DiscordClient(discord_token, channel_id)
+
     print_choices()
     choice = input('any other key to exit\n')
     while choice == '1' or choice == '2' or choice == '3' or choice == '4' or choice == '5':
