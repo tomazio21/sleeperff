@@ -1,11 +1,12 @@
+def get_team_record(team):
+    return ('%s    %s - %s - %s   %s PF    %s PA' % 
+            (team.display_name, str(team.wins), str(team.losses),
+             str(team.ties), str(team.pf), str(team.pa)))
+
+
 def get_standings_text(teams):
-    standings_text = []
-    sorted_teams = sorted(teams, key=lambda x: (x.wins, x.pf), reverse=True)
-    for team in sorted_teams:
-        standings_text.append(team.display_name + '    ' + str(team.wins) + '-'
-                              + str(team.losses) + '-' + str(team.ties) +
-                              '    ' + str(team.pf) + ' PF    ' + str(team.pa)
-                              + ' PA')
+    teams_sorted_by_wins_then_pf = sorted(teams, key=lambda x: (x.wins, x.pf), reverse=True)
+    standings_text = [get_team_record(team) for team in teams_sorted_by_wins_then_pf]
     text = ['Standings'] + standings_text
     return '\n'.join(text)
 
@@ -17,13 +18,15 @@ def get_power_rankings_text(scoreboard, teams, roster_ids_to_team_name):
     return '\n'.join(text)
 
 
+def get_matchup(team1, team1_score, team2, team2_score):
+    return '%s - %s vs %s - %s' % (team1, team1_score, team2, team2_score)
+
+
 def get_matchups_text(matchups, roster_ids_to_team_name, week):
-    matchups_text = []
-    for count, matchup in enumerate(matchups):
-        matchups_text.append(roster_ids_to_team_name[matchup.roster_ids[0]] +
-                             ' - ' + str(matchup.scores[0]) + ' vs ' +
-                             roster_ids_to_team_name[matchup.roster_ids[1]] +
-                             ' - ' + str(matchup.scores[1]))
+    matchups_text = [
+        get_matchup(roster_ids_to_team_name[matchup.roster_ids[0]], str(matchup.scores[0]),
+                    roster_ids_to_team_name[matchup.roster_ids[1]], str(matchup.scores[1]))
+                    for count, matchup in enumerate(matchups)]
     text = ['Week ' + str(week)] + matchups_text
     return '\n'.join(text)
 
