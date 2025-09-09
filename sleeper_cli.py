@@ -16,7 +16,7 @@ urls = {
 }
 
 
-def get_nfl_week():
+def get_current_nfl_week():
     response = httputil.get(urls['get_nfl_state'])
     parsed = json.loads(response.read().decode('utf-8'))
     return parsed['week']
@@ -142,7 +142,8 @@ if __name__ == '__main__':
         channel_id = tokens['channelId']
         discordClient = discord_client.DiscordClient(discord_token, channel_id)
 
-    week_number = get_nfl_week()
+    week_number = get_current_nfl_week()
+    week_number = week_number - 1
     print('gathering data for week {}'.format(str(week_number)))
 
     teams = get_teams(league_id)
